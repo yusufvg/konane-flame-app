@@ -2,9 +2,10 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:konane/components/space.dart';
+import 'package:konane/konane_game.dart';
 import 'package:konane/utils/visual_consts.dart';
 
-class Board extends PositionComponent {
+class Board extends PositionComponent with HasGameRef<KonaneGame> {
   final List<Space> spaces;
   int _boardSize = 8;
 

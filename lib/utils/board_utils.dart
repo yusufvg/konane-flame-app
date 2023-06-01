@@ -25,6 +25,11 @@ class Coordinates {
   }
 
   @override
+  String toString() {
+    return '($row, $col)';
+  }
+
+  @override
   bool operator ==(Object other) =>
       other is Coordinates && other.row == row && other.col == col;
 

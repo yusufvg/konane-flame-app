@@ -4,12 +4,16 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
+import 'package:konane/components/space.dart';
+import 'package:konane/konane_game.dart';
 import 'package:konane/utils/board_utils.dart';
 import 'package:konane/utils/visual_consts.dart';
 
-class Piece extends PositionComponent with DragCallbacks {
+class Piece extends PositionComponent
+    with DragCallbacks, HasGameRef<KonaneGame> {
   final PieceState state;
   Coordinates _coords;
+  bool _isDragging = false;
 
   Piece(this.state, this._coords) {
     assert(state != PieceState.empty);
@@ -28,11 +32,19 @@ class Piece extends PositionComponent with DragCallbacks {
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
+    if (state != game.controller.currentPlayer) {
+      return;
+    }
+    _isDragging = true;
     priority = 5;
   }
 
   @override
   void onDragUpdate(DragUpdateEvent event) {
+    if (!_isDragging) {
+      return;
+    }
+
     final cameraZoom = (findGame()! as FlameGame)
         .firstChild<CameraComponent>()!
         .viewfinder
@@ -44,8 +56,24 @@ class Piece extends PositionComponent with DragCallbacks {
   @override
   void onDragEnd(DragEndEvent event) {
     super.onDragEnd(event);
-    _returnPiece();
+    if (!_isDragging) {
+      return;
+    }
+    _isDragging = false;
     priority = 3;
+
+    final dropSpaces = parent!
+        .componentsAtPoint(position + size / 2)
+        .whereType<Space>()
+        .toList();
+
+    if (dropSpaces.isNotEmpty &&
+        game.controller.makeMove(coords, dropSpaces.first.coords)) {
+      coords = dropSpaces.first.coords;
+      game.updatePieces();
+    }
+
+    _returnPiece();
   }
 
   @override

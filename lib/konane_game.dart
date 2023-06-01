@@ -6,17 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:konane/components/board.dart';
 import 'package:konane/components/piece.dart';
 import 'package:konane/components/space.dart';
+import 'package:konane/components/src/board_controller.dart';
+import 'package:konane/components/src/board_model.dart';
 import 'package:konane/utils/board_consts.dart';
 import 'package:konane/utils/board_utils.dart';
 import 'package:konane/utils/visual_consts.dart';
 
 class KonaneGame extends FlameGame {
+  late final BoardController controller;
+  late final BoardModel model;
+  late final World world;
+
+  KonaneGame(this.model, this.controller)
+
   @override
   Color backgroundColor() => gameBackgroundColor;
 
   @override
   FutureOr<void> onLoad() {
-    final pieces = [
+    model = BoardModel(Settings.boardSize);
+    controller = BoardController(model);
+
+    var pieces = [
       for (var r = 0; r < Settings.boardSize; r++)
         for (var c = 0; c < Settings.boardSize; c++)
           Piece(PieceState.values[(c % 2 + r % 2) % 2 + 1], Coordinates(r, c))
@@ -26,7 +37,7 @@ class KonaneGame extends FlameGame {
 
     List<Space> spaces = [];
     for (var piece in pieces) {
-      var space = Space.fill(piece.coords, piece)
+      var space = Space(piece.coords)
         ..size = spaceSize
         ..position = Vector2(
             gamePadding +
@@ -40,6 +51,12 @@ class KonaneGame extends FlameGame {
       spaces.add(space);
     }
 
+    // TODO(yvangieson): allow choosing the pieces to remove to start
+    pieces.removeWhere((piece) =>
+        piece.coords == Coordinates(3, 3) || piece.coords == Coordinates(4, 3));
+    model.setPieceState(Coordinates(3, 3), PieceState.empty);
+    model.setPieceState(Coordinates(4, 3), PieceState.empty);
+
     Vector2 boardSize = Vector2.all(boardPadding * 2 +
         (spaceGap * (Settings.boardSize - 1)) +
         spaceRadius * 2 * Settings.boardSize);
@@ -48,7 +65,7 @@ class KonaneGame extends FlameGame {
       ..position = Vector2.all(gamePadding)
       ..priority = 1;
 
-    final world = World()
+    world = World()
       ..add(board)
       ..addAll(spaces)
       ..addAll(pieces);
@@ -61,5 +78,11 @@ class KonaneGame extends FlameGame {
     add(camera);
 
     return super.onLoad();
+  }
+
+  void updatePieces() {
+    world.removeWhere((component) =>
+        component is Piece &&
+        model.getPieceState(component.coords) == PieceState.empty);
   }
 }

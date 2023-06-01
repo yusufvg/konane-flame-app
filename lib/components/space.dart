@@ -2,24 +2,16 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:konane/components/piece.dart';
+import 'package:konane/konane_game.dart';
 import 'package:konane/utils/board_utils.dart';
 import 'package:konane/utils/visual_consts.dart';
 
-class Space extends PositionComponent {
+class Space extends PositionComponent with HasGameRef<KonaneGame> {
   final Coordinates coords;
-  Piece? piece;
 
   Space(this.coords);
 
-  Space.fill(this.coords, Piece piece) {
-    acquirePiece(piece);
-  }
-
   // Getters, setters.
-
-  bool get isEmpty => piece == null;
-
-  PieceState get state => piece != null ? piece!.state : PieceState.empty;
 
   // Event handlers.
 
@@ -30,21 +22,4 @@ class Space extends PositionComponent {
   }
 
   // Methods.
-
-  void acquirePiece(Piece piece) {
-    assert(isEmpty);
-
-    this.piece = piece;
-    piece.coords = coords;
-  }
-
-  void removePiece() {
-    assert(!isEmpty);
-
-    piece = null;
-  }
-
-  bool hasPiece(Piece piece) {
-    return !isEmpty && this.piece == piece;
-  }
 }

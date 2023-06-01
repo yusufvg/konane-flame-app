@@ -17,8 +17,6 @@ class KonaneGame extends FlameGame {
   late final BoardModel model;
   late final World world;
 
-  KonaneGame(this.model, this.controller)
-
   @override
   Color backgroundColor() => gameBackgroundColor;
 

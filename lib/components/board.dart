@@ -1,17 +1,17 @@
+import 'dart:ui';
+
 import 'package:flame/components.dart';
-import 'package:konane/components/piece.dart';
 import 'package:konane/components/space.dart';
+import 'package:konane/utils/visual_consts.dart';
 
 class Board extends PositionComponent {
-  final List<Space> _spaces = [];
-  final int _boardSize = 8;
+  final List<Space> spaces;
+  int _boardSize = 8;
 
-  Board(List<Piece> pieces, {int boardSize = 8}) {
-    assert(pieces.length == boardSize * boardSize);
+  Board(this.spaces, {int boardSize = 8}) {
+    assert(spaces.length == boardSize * boardSize);
 
-    for (var piece in pieces) {
-      _spaces.add(Space.fill(piece.coords, piece));
-    }
+    _boardSize = boardSize;
   }
 
   // Getters, setters.
@@ -19,6 +19,12 @@ class Board extends PositionComponent {
   int get boardSize => _boardSize;
 
   // Event handlers.
+
+  @override
+  void render(Canvas canvas) {
+    canvas.drawRRect(RRect.fromRectXY(size.toRect(), boardRadius, boardRadius),
+        Paint()..color = boardColor);
+  }
 
   // Methods
 }

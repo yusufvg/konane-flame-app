@@ -82,7 +82,8 @@ class KonaneGame extends FlameGame {
     add(world);
 
     final camera = CameraComponent(world: world)
-      ..viewfinder.visibleGameSize = boardSize + Vector2.all(gamePadding * 2)
+      ..viewfinder.visibleGameSize =
+          boardSize + Vector2(0, textPaneHeight) + Vector2.all(gamePadding * 4)
       ..viewfinder.position = Vector2(boardSize.x / 2 + gamePadding, 0)
       ..viewfinder.anchor = Anchor.topCenter;
     add(camera);

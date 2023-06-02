@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: colorScheme.primary,
         title: Text(widget.title),
       ),
-      body: GameWidget(game: KonaneGame()),
+      body: GameWidget(game: KonaneGame(Theme.of(context))),
     );
   }
 }

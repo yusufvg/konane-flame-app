@@ -32,7 +32,9 @@ class Piece extends PositionComponent
   @override
   void onDragStart(DragStartEvent event) {
     super.onDragStart(event);
-    if (state != game.controller.currentPlayer) {
+    if (!game.controller.hasGameStarted ||
+        game.controller.hasGameEnded ||
+        state != game.controller.currentPlayer) {
       return;
     }
     _isDragging = true;

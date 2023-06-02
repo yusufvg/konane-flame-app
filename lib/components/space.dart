@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flame/components.dart';
-import 'package:konane/components/piece.dart';
 import 'package:konane/konane_game.dart';
 import 'package:konane/utils/board_utils.dart';
 import 'package:konane/utils/visual_consts.dart';

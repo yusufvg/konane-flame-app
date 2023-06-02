@@ -3,12 +3,40 @@ import 'package:konane/utils/board_utils.dart';
 
 class BoardController {
   final BoardModel _boardModel;
-  PieceState _currentPlayer = PieceState.black;
+  GameState _state = GameState.waiting;
+  PieceState _winner = PieceState.empty;
 
   BoardController(this._boardModel);
 
   PieceState get currentPlayer {
-    return PieceState.values[_currentPlayer.index];
+    switch (_state) {
+      case GameState.blacksTurn:
+        return PieceState.black;
+      case GameState.whitesTurn:
+        return PieceState.white;
+      default:
+        return PieceState.empty;
+    }
+  }
+
+  bool get hasGameStarted => _state != GameState.waiting;
+
+  bool get hasGameEnded => _state == GameState.ended;
+
+  String get gameMessage {
+    if (_state == GameState.waiting) {
+      return "Waiting to start.";
+    } else if (_state == GameState.blacksTurn ||
+        _state == GameState.whitesTurn) {
+      return "It is currently ${playerAsString(currentPlayer)}'s turn.";
+    } else {
+      return "${playerAsString(_winner)} wins!";
+    }
+  }
+
+  // TODO(yvangieson): refactor to accept removing starting pieces
+  void startGame() {
+    _state = GameState.blacksTurn;
   }
 
   /// Attempts to have the current player move their piece from [origin] to [dest],
@@ -16,7 +44,11 @@ class BoardController {
   ///
   /// Returns false if the move is not legal (e.g. invalid coords, diagonal jump, destination occupied, etc.).
   /// Returns true if the move was successfully completed. In this case, the current player is updated to the opponent.
+  ///
+  /// Asserts that the game has started and not ended.
   bool makeMove(Coordinates origin, Coordinates dest) {
+    assert(hasGameStarted && !hasGameEnded);
+
     // invalid coordinates
     if (!_boardModel.isValidCoordinate(origin) ||
         !_boardModel.isValidCoordinate(dest)) {
@@ -64,26 +96,39 @@ class BoardController {
 
     // pieces in illegal state
     if (_boardModel.getPieceState(dest) != PieceState.empty ||
-        _boardModel.getPieceState(origin) != _currentPlayer) return false;
+        _boardModel.getPieceState(origin) != currentPlayer) return false;
     for (PieceState state in intermediateSpaces.values) {
       if (state == PieceState.empty) return false;
     }
 
     // make the move
     _boardModel.setPieceState(origin, PieceState.empty);
-    _boardModel.setPieceState(dest, _currentPlayer);
+    _boardModel.setPieceState(dest, currentPlayer);
     for (Coordinates coords in intermediateSpaces.keys) {
       _boardModel.setPieceState(coords, PieceState.empty);
     }
-    _currentPlayer = _currentPlayer == PieceState.black
-        ? PieceState.white
-        : PieceState.black;
+    _state = _state == GameState.blacksTurn
+        ? GameState.whitesTurn
+        : GameState.blacksTurn;
+
+    // check for winner
+    if (!hasValidMoves()) {
+      _winner = getOpponent(currentPlayer);
+      _state = GameState.ended;
+    }
 
     return true;
   }
 
   /// Checks whether or not the currently active player has any valid moves remaining.
   bool hasValidMoves() {
-    return _boardModel.hasValidMoves(_currentPlayer);
+    return _boardModel.hasValidMoves(currentPlayer);
   }
+}
+
+enum GameState {
+  waiting,
+  blacksTurn,
+  whitesTurn,
+  ended,
 }

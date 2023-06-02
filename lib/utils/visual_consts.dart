@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 /// App level theme info.
 
-const themeColor = Colors.green;
+const themeColor = Color.fromARGB(255, 79, 24, 43);
 
 /// Game level visual info.
 
@@ -32,5 +32,13 @@ const spaceCircle = Radius.circular(spaceRadius);
 
 const double boardPadding = 35.0;
 const double boardRadius = 25.0;
+
+const double textPaneHeight = 200;
+const double textPanePadding = 35.0;
+const double textPaneRadius = 25.0;
+
+const double gameMessageWidth = 200.0;
+const double gameMessageHeight = 100.0;
+final Vector2 gameMessageSize = Vector2(gameMessageWidth, gameMessageHeight);
 
 const double gamePadding = 80.0;

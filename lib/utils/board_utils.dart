@@ -63,3 +63,8 @@ PieceState getOpponent(PieceState player) {
 
   return player == PieceState.black ? PieceState.white : PieceState.black;
 }
+
+String playerAsString(PieceState player) {
+  assert(player != PieceState.empty);
+  return player == PieceState.black ? "Black" : "White";
+}

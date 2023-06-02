@@ -8,6 +8,7 @@ import 'package:konane/components/piece.dart';
 import 'package:konane/components/space.dart';
 import 'package:konane/components/src/board_controller.dart';
 import 'package:konane/components/src/board_model.dart';
+import 'package:konane/components/text_pane.dart';
 import 'package:konane/utils/board_consts.dart';
 import 'package:konane/utils/board_utils.dart';
 import 'package:konane/utils/visual_consts.dart';
@@ -16,6 +17,10 @@ class KonaneGame extends FlameGame {
   late final BoardController controller;
   late final BoardModel model;
   late final World world;
+
+  late final ThemeData theme;
+
+  KonaneGame(this.theme);
 
   @override
   Color backgroundColor() => gameBackgroundColor;
@@ -63,10 +68,17 @@ class KonaneGame extends FlameGame {
       ..position = Vector2.all(gamePadding)
       ..priority = 1;
 
+    Vector2 textPaneSize = Vector2(boardSize.x, textPaneHeight);
+    final textPane = TextPane()
+      ..size = textPaneSize
+      ..position = Vector2(gamePadding, gamePadding * 2 + boardSize.y)
+      ..priority = 1;
+
     world = World()
       ..add(board)
       ..addAll(spaces)
-      ..addAll(pieces);
+      ..addAll(pieces)
+      ..add(textPane);
     add(world);
 
     final camera = CameraComponent(world: world)
@@ -74,6 +86,8 @@ class KonaneGame extends FlameGame {
       ..viewfinder.position = Vector2(boardSize.x / 2 + gamePadding, 0)
       ..viewfinder.anchor = Anchor.topCenter;
     add(camera);
+
+    controller.startGame();
 
     return super.onLoad();
   }

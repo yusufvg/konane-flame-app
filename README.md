@@ -20,3 +20,4 @@ TODOS:
 - highlight valid places
 - ai opponent, single player mode
 - move argument errors to assertions in model/controller
+- restart button/main menu
